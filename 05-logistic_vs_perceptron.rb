@@ -44,24 +44,26 @@ def prepare_dataset(variance)
   df.set_index(:index)
 end
 
+# ロジスティック回帰
 def run_logistic(train_set, plot)
   w = Numo::NArray[[0], [0.1], [0.1]]
   phi = train_set[:x, :y]
   phi[:bias] = Array.new(phi.size).fill(1)
   t = train_set[:type]
+  t = t.to_matrix
 
   # 最大30回のIterationを実施
   30.times do
     # IRLS法によるパラメータの修正
     y = []
     phi.each_row do |line|
-      a = Vector[*line.to_a].inner_product(w)
+      a = Vector[*line.to_a].dot(w)
       y << (1.0 / (1.0 + Math.exp(-a)))
     end
     r = Matrix.diagonal(*(Numo::NArray[*y] * (1 - Numo::NArray[*y]).to_a))
     y = Numo::NArray[y].transpose
     tmp1 = Matrix[*Numo::NArray[*phi.to_matrix.transpose.to_a].dot(Numo::NArray[*r.to_a]).dot(Numo::NArray[*phi.to_matrix.to_a]).to_a].inverse
-    tmp2 = Numo::NArray[*phi.to_matrix.transpose.to_a].dot(y - Numo::NArray[*t.to_matrix.transpose.to_a])
+    tmp2 = Numo::NArray[*phi.to_matrix.transpose.to_a].dot(y - Numo::NArray[*t.transpose.to_a])
     w_new = w - Numo::NArray[*tmp1.to_a].dot(tmp2)
 
     # パラメータの変化が 0.1% 未満になったら終了
