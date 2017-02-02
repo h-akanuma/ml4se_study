@@ -5,6 +5,7 @@ gem install rbczmq
 gem install iruby
 gem install nyaplot
 gem install rubystats
+gem install rmagick
 
 git clone git://github.com/ruby-numo/narray
 cd narray
